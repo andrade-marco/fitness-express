@@ -1,0 +1,22 @@
+{
+  "startTimeMillis": 1533593332529,
+  "endTimeMillis": 1534210070135,
+  "aggregateBy": [
+    {
+      "dataTypeName": "com.google.step_count.delta",
+      "dataSourceId": "derived:com.google.step_count.delta:com.google.android.gms:estimated_steps"
+    },
+    {
+      "dataTypeName": "com.google.distance.delta",
+      "dataSourceId": "derived:com.google.distance.delta:com.google.android.gms:from_steps<-merge_step_deltas"
+    },
+    {
+      "dataTypeName": "com.google.calories.expended",
+      "dataSourceId": "derived:com.google.calories.expended:com.google.android.gms:from_activities"
+    },
+    {
+      "dataTypeName": "com.google.speed",
+      "dataSourceId": "derived:com.google.speed:com.google.android.gms:from_distance<-merge_distance_delta"
+    }
+  ]
+}
