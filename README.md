@@ -11,7 +11,7 @@ Also, track which activities you completed by day of the week!
 
 HOW TO RUN THE APP
 1) Download this repository
-2) On the root folder, run 'npm start'
+2) On the root folder, run 'npm install' then 'npm start'
 3) Open browser and navigate to http://localhost:3000 (this should happen automatically)
 
 
