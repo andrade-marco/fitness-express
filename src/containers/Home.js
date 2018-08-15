@@ -16,6 +16,7 @@ import NavBar from '../components/NavBar';
 import AveragesPanel from '../components/AveragesPanel';
 import ActivityTable from '../components/ActivityTable';
 import {fetchUserData} from '../store/actions/home';
+import {signoutUser} from '../store/actions/auth';
 
 //Setup vars
 //Text options for graph header
@@ -45,11 +46,13 @@ class HomePage extends Component {
   }
 
   //Lifecycle methods
+  //Sends API request and add event listener for responsive bar chart
   componentDidMount() {
     this.props.fetchUserData();
     window.addEventListener('resize', () => this.handleGraphGeneration())
   }
 
+  //Generates bar chart once data from API is received
   componentDidUpdate() {
     this.handleGraphGeneration();
   }
@@ -75,6 +78,7 @@ class HomePage extends Component {
       const nodes = d3.select(container).selectAll('.bar').data(dataset);
       const groups = nodes.enter().append('g').classed('bar', true);
 
+      //Appending bars and texts
       groups.append('rect')
             .style('fill', '#06bec2')
             .attr('x', (d,i) => i * width / 7)
@@ -98,6 +102,7 @@ class HomePage extends Component {
   }
 
   //Handlers
+  //Handles the generation of bar chart
   handleGraphGeneration = () => {
     if ('sets' in this.props.userData) {
       const svg = this.graph;
@@ -107,11 +112,14 @@ class HomePage extends Component {
     }
   }
 
+  //Handles signing out
   handleSignOut = () => {
-    localStorage.clear();
-    this.props.history.push('/');
+    this.props.signoutUser(() => {
+      this.props.history.push('/');
+    });
   }
 
+  //Handles change in chart dropdown
   handleDropdownChange = (event, {value}) => {
     this.setState({
       ...this.state,
@@ -158,11 +166,5 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps, {fetchUserData})(HomePage);
-
-
-// <Message
-//   style={{minHeight: '420px'}}
-//   icon='ban'
-//   header='No data found'
-//   content='FitnessExpress could not find any Google Fit data for you. Please go to your Google Fit account and enter some workout sessions to begin visualizing it here.'/>
+//Export
+export default connect(mapStateToProps, {fetchUserData, signoutUser})(HomePage);

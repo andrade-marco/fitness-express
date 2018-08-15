@@ -9,6 +9,7 @@ export const dataSources = {
   'com.google.activity.segment': 'activity'
 }
 
+//Converts Google activity codes into the proper names
 export const activitiesDictionary = {
     9: "Aerobics",
   119: "Archery",

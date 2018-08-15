@@ -13,7 +13,12 @@ export const signinUser = (response, callback) => dispatch => {
   callback();
 }
 
-//Sign in failed - dispatch error if sign in with Google fails
-export const signinFailed = response => dispatch => {
-  console.log(response);
+//Sign out user - remove tokens from local storage
+//Note: this does not sign out user from their Google Account
+//This was done intentionally - user only signs out from FitnessExpress
+export const signoutUser = (callback) => dispatch => {
+  localStorage.clear();
+  setTokenHeader(null);
+  dispatch({type: null});
+  callback();
 }
