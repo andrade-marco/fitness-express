@@ -7,14 +7,16 @@ import {
   Container,
   Grid,
   Segment,
+  Header,
   Label,
   Icon,
   Dropdown,
   Message} from 'semantic-ui-react';
 import * as d3 from 'd3';
 import NavBar from '../components/NavBar';
-import AveragesPanel from '../components/AveragesPanel';
-import ActivityTable from '../components/ActivityTable';
+import PageLoader from '../components/PageLoader';
+import DataContainer from '../components/DataContainer';
+import EmptyDataMessage from '../components/EmptyDataMessage';
 import {fetchUserData} from '../store/actions/home';
 import {signoutUser} from '../store/actions/auth';
 
@@ -41,14 +43,21 @@ class HomePage extends Component {
     super(props);
     this.state = {
       selectedData: 'steps',
-      headerText: 'Total steps'
+      headerText: 'Total steps',
+      pageLoading: true
     }
   }
 
   //Lifecycle methods
   //Sends API request and add event listener for responsive bar chart
   componentDidMount() {
-    this.props.fetchUserData();
+    this.props.fetchUserData(() => {
+      this.setState({
+        ...this.state,
+        pageLoading: false
+      });
+    });
+
     window.addEventListener('resize', () => this.handleGraphGeneration())
   }
 
@@ -59,7 +68,7 @@ class HomePage extends Component {
 
   //Helpers
   updateBarChart = (container, dataset, prevDataset) => {
-    if (dataset && dataset.length > 0) {
+    if (container) {
       const width = parseInt(d3.select(container).style("width"));
       const height = parseInt(d3.select(container).style("height"));
 
@@ -129,36 +138,46 @@ class HomePage extends Component {
   }
 
   //Rendering component
+  renderContent = () => {
+    const {pageLoading} = this.state;
+    const {sets, avgs, activities} = this.props.userData;
+
+    if (this.state.pageLoading) {
+      return <PageLoader/>;
+
+    } else {
+      const hasSets = Object.keys(sets).length > 0;
+      const hasAvgs = Object.keys(avgs).length > 0;
+
+      if (hasSets || hasAvgs) {
+        return (
+          <DataContainer
+            username={this.props.username}
+            averages={avgs}
+            activities={activities}
+            headerText={this.state.headerText}
+            dropdownChange={this.handleDropdownChange}
+            dropdownValue={this.state.selectedData}
+            svgComponent={() => <svg ref={graph => this.graph = graph} height={420} width='100%'></svg>}
+            />
+        );
+      } else {
+        return <EmptyDataMessage />;
+      }
+    }
+  }
+
   render () {
     return (
       <div className='page-wrapper'>
         <NavBar signOut={this.handleSignOut}/>
-        <Container className='content-wrapper'>
-          <Label circular size='big' style ={{paddingLeft: '20px', marginBottom: '10px'}}>
-            <Icon name='user' />
-            Welcome, {this.props.username}
-          </Label>
-          <Grid stackable columns={2}>
-            <Grid.Column width={6}>
-              <AveragesPanel averages={this.props.userData.avgs}/>
-              <ActivityTable activities={this.props.userData.activities}/>
-            </Grid.Column>
-            <Grid.Column width={10}>
-                <Segment className='graph-header' attached='top'>
-                  <span>{this.state.headerText}</span>
-                    <Dropdown onChange={this.handleDropdownChange} options={options} placeholder='Choose an option' value={this.state.selectedData} selection/>
-                </Segment>
-                <Segment attached='bottom'>
-                  <svg ref={graph => this.graph = graph} height={420} width='100%'></svg>
-                </Segment>
-            </Grid.Column>
-          </Grid>
-        </Container>
+        {this.renderContent()}
       </div>
     );
   }
 }
 
+//Mapping global state to props
 const mapStateToProps = state => {
   return {
     username: state.auth.currentUser.name,

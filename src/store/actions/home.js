@@ -6,12 +6,14 @@ import {SET_USER_DATA} from '../types';
 
 //Actions
 //Fetching user data -  make request to Google Fitness API and store the data
-export const fetchUserData = () => async dispatch => {
+export const fetchUserData = callback => async dispatch => {
   try {
     aggPostReq.endTimeMillis = new Date().setHours(0, 0, 0, 0);
     aggPostReq.startTimeMillis = aggPostReq.endTimeMillis - 6.048e+8;
     const reqUrl = 'https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate';
     const response = await createApiRequest('post', reqUrl, aggPostReq);
+
+    console.log(response.data);
 
     let fitnessData = {}
     fitnessData.avgs = {};
@@ -29,9 +31,13 @@ export const fetchUserData = () => async dispatch => {
     });
 
     dispatch({type: SET_USER_DATA, payload: fitnessData});
+    callback();
 
   } catch (err) {
-    console.log(err);
-    dispatch({type: null});
+    let fitnessData = {}
+    fitnessData.avgs = {};
+    fitnessData.sets = {};
+    dispatch({type: SET_USER_DATA, payload: fitnessData});
+    callback();
   }
 }

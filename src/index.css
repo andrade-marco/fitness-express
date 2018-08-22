@@ -1,8 +1,11 @@
 /* FitnessExpress CSS */
 
-body {
+body,
+#root,
+.page-wrapper {
   margin: 0;
   padding: 0;
+  height: 100%;
 }
 
 .landing-wrapper {

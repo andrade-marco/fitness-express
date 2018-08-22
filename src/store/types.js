@@ -1,2 +1,3 @@
 export const SET_CURRENT_USER = 'SET_CURRENT_USER';
 export const SET_USER_DATA = 'SET_USER_DATA';
+export const FIT_APP_NOT_FOUND = 'FIT_APP_NOT_FOUND';
